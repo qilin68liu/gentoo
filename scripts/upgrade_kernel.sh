@@ -36,7 +36,6 @@ make install
 make clean
 
 ## building initramfs
-NEW_VER=$(uname -r)
 dracut --kver=$NEW_VER
 
 ## removing old kernel
