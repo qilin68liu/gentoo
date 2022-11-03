@@ -22,14 +22,15 @@ echo "new version: $NEW_VER"
 
 ## check version
 if [ "$CUR_VER" == "$NEW_VER" ]; then
-	echo "no need to update, exit"
+	echo 'no need to update, exit'
+	exit 0
 fi
 
 ## swich dir
 cd $SRC_DIR
 
 ## building kernel
-make olddefconfig
+make defconfig
 make -j $PRO_NUM
 make modules_install
 make install
@@ -39,11 +40,8 @@ make clean
 dracut --kver=$NEW_VER
 
 ## removing old kernel
-rm -rf /lib/modules/$CUR_VER
-rm -rf /boot/*$CUR_VER*
+rm -vrf /lib/modules/$CUR_VER
+rm -vrf /boot/*$CUR_VER*
 
 ## updating bootloader
 grub-mkconfig -o /boot/grub/grub.cfg
-
-## switch dir
-cd $CUR_DIR
