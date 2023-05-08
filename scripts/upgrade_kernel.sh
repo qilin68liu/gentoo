@@ -14,7 +14,6 @@ function new_version() {
 ## params
 CUR_VER=$(uname -r)
 NEW_VER=$(new_version)
-CUR_DIR=$(pwd)
 PRO_NUM=$(expr $(nproc) + 1)
 
 echo "current version: $CUR_VER"
