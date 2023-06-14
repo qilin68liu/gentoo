@@ -44,3 +44,6 @@ rm -vrf /boot/*$CUR_VER*
 
 ## updating bootloader
 grub-mkconfig -o /boot/grub/grub.cfg
+
+## set grub bootloader timeout
+sed -i 's/timeout=[0-9]\+/timeout=1' /boot/grub/grub.cfg
