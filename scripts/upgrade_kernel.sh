@@ -46,4 +46,4 @@ rm -vrf /boot/*$CUR_VER*
 grub-mkconfig -o /boot/grub/grub.cfg
 
 ## set grub bootloader timeout
-sed -i 's/timeout=[0-9]\+/timeout=1' /boot/grub/grub.cfg
+sed -i 's/timeout=[0-9]\+/timeout=1/g' /boot/grub/grub.cfg
