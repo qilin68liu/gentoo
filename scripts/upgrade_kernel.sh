@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -ex
 
 ## check kernel version in src
 SRC_DIR='/usr/src/linux'
@@ -28,15 +28,20 @@ fi
 ## swich dir
 cd $SRC_DIR
 
+## copy old kernel config
+cp /boot/config-$CUR_VER ~/config
+
 ## building kernel
-make defconfig
+make olddefconfig
+make modules_prepare
 make -j $PRO_NUM
+emerge --ask @module-rebuild
 make modules_install
 make install
-make clean
+make distclean
 
 ## building initramfs
-dracut --kver=$NEW_VER
+dracut --force --kver=$NEW_VER
 
 ## removing old kernel
 rm -vrf /lib/modules/$CUR_VER
