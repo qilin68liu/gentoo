@@ -1,6 +1,9 @@
 #!/bin/bash
 set -ex
 
+CLEAN_BUILD=Yes
+FORCE_UPGRADE=No
+
 ## check kernel version in src
 SRC_DIR='/usr/src/linux'
 function new_version() {
@@ -20,7 +23,7 @@ echo "current version: $CUR_VER"
 echo "new version: $NEW_VER"
 
 ## check version
-if [ "$CUR_VER" == "$NEW_VER" ]; then
+if [ "$CUR_VER" == "$NEW_VER" ] && [ $FORCE_UPGRADE == 'No' ]; then
 	echo 'no need to update, exit'
 	exit 0
 fi
@@ -29,26 +32,32 @@ fi
 cd $SRC_DIR
 
 ## copy old kernel config
-cp /boot/config-$CUR_VER ~/config
+cp /boot/config-$CUR_VER .config
 
 ## building kernel
 make olddefconfig
 make modules_prepare
 make -j $PRO_NUM
-emerge --ask @module-rebuild
+emerge @module-rebuild
 make modules_install
 make install
-make distclean
+
+## clean build dir
+if [ "$CLEAN_BUILD" == 'Yes' ]; then
+    make distclean
+fi
 
 ## building initramfs
-dracut --force --kver=$NEW_VER
+# dracut --force --kver=$NEW_VER
 
 ## removing old kernel
-rm -vrf /lib/modules/$CUR_VER
-rm -vrf /boot/*$CUR_VER*
+if [ "$CUR_VER" != "$NEW_VER" ]; then
+    rm -vrf /lib/modules/$CUR_VER
+    rm -vrf /boot/*$CUR_VER*
+fi
 
 ## updating bootloader
-grub-mkconfig -o /boot/grub/grub.cfg
+# grub-mkconfig -o /boot/grub/grub.cfg
 
 ## set grub bootloader timeout
 sed -i 's/timeout=[0-9]\+/timeout=1/g' /boot/grub/grub.cfg
